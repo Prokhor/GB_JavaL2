@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<AnchorPane prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+
+   <children>
+       <TextField fx:id="tfMessage" layoutX="10.0" layoutY="511.0" onKeyPressed="#tfMessageOnKeyPressed" prefHeight="25.0" prefWidth="290.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="100.0" />
+       <TextArea fx:id="taMessages" editable="false" prefHeight="445.0" prefWidth="380.0"
+                 AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
+       </TextArea>
+       <Button fx:id="btnSend" layoutX="308.0" layoutY="511.0" mnemonicParsing="false"
+               onAction="#btnSendClick" onMouseEntered="#btnOnMouseEntered"
+               prefHeight="25.0" prefWidth="82.0" text="Send"
+               AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+       <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+           <Menu text="Menu">
+               <MenuItem text="Close" onAction="#miOnAction" />
+           </Menu>
+           <Menu text="Help">
+               <MenuItem fx:id="miHelp" text="?" />
+           </Menu>
+       </MenuBar>
+   </children>
+</AnchorPane>

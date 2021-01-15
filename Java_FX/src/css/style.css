@@ -1,0 +1,18 @@
+.root{
+    -fx-font-size: 14px;
+}
+
+#taMessages{
+    -fx-padding: 2px;
+    -fx-wrap-text: true;
+    -fx-font-size: 16px;
+    -fx-font-style: italic;
+}
+
+#btnSend{
+    -fx-background-color: #A8E4A0;
+}
+
+#btnSend:hover{
+    -fx-background-color: #85C57C;
+}
