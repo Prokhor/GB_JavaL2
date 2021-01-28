@@ -1,0 +1,27 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+<?import javafx.scene.control.PasswordField?>
+<VBox fx:controller="client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
+
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+
+    <HBox fx:id="authPanel">
+        <TextField fx:id="tfLogin" HBox.hgrow="ALWAYS" promptText="login" />
+        <PasswordField fx:id="pfPassword" HBox.hgrow="ALWAYS" promptText="password" onAction="#tryToAuth"/>
+        <Button fx:id="btnAuthenticate" text="Login" onAction="#tryToAuth"  minWidth="80" />
+    </HBox>
+
+    <TextArea fx:id="taMessages" VBox.vgrow="ALWAYS" editable="false" wrapText="true" />
+
+    <HBox fx:id="msgPanel" visible="false" managed="false">
+        <TextField fx:id="tfMessage" HBox.hgrow="ALWAYS" promptText="enter message" onAction="#sendMessage" />
+        <Button fx:id="btnSendMessage" text="Send" onAction="#sendMessage" />
+    </HBox>
+
+</VBox>
