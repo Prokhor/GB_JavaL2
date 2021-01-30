@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ListView?>
 <VBox fx:controller="client.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
 
     <stylesheets>
@@ -12,16 +13,20 @@
     </stylesheets>
 
     <HBox fx:id="authPanel">
-        <TextField fx:id="tfLogin" HBox.hgrow="ALWAYS" promptText="login" />
+        <TextField fx:id="tfLogin" HBox.hgrow="ALWAYS" promptText="login"/>
         <PasswordField fx:id="pfPassword" HBox.hgrow="ALWAYS" promptText="password" onAction="#tryToAuth"/>
-        <Button fx:id="btnAuthenticate" text="Login" onAction="#tryToAuth"  minWidth="80" />
+        <Button fx:id="btnAuthenticate" text="Login" onAction="#tryToAuth" minWidth="80"/>
+        <Button fx:id="btnRegister" text="Registration" onAction="#registrationClient" minWidth="80"/>
     </HBox>
 
-    <TextArea fx:id="taMessages" VBox.vgrow="ALWAYS" editable="false" wrapText="true" />
+    <HBox VBox.vgrow="ALWAYS">
+        <ListView fx:id="lvClients" visible="false" managed="false" minWidth="100" onMouseReleased="#lvClientsClicked"/>
+        <TextArea fx:id="taMessages" HBox.hgrow="ALWAYS" editable="false" wrapText="true"/>
+    </HBox>
 
     <HBox fx:id="msgPanel" visible="false" managed="false">
-        <TextField fx:id="tfMessage" HBox.hgrow="ALWAYS" promptText="enter message" onAction="#sendMessage" />
-        <Button fx:id="btnSendMessage" text="Send" onAction="#sendMessage" />
+        <TextField fx:id="tfMessage" HBox.hgrow="ALWAYS" promptText="enter message" onAction="#sendMessage"/>
+        <Button fx:id="btnSendMessage" text="Send" onAction="#sendMessage"/>
     </HBox>
 
 </VBox>

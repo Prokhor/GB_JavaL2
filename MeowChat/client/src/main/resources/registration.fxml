@@ -1,0 +1,25 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+<?import javafx.scene.control.PasswordField?>
+
+<VBox fx:controller="client.RegistrationController" xmlns:fx="http://javafx.com/fxml" alignment="center">
+
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+
+    <TextField fx:id="tfLogin" promptText="login" onKeyReleased="#checkFields"/>
+    <PasswordField fx:id="pfPassword1" promptText="password" onKeyReleased="#checkFields"/>
+    <PasswordField fx:id="pfPassword2" promptText="confirm password" onKeyReleased="#checkFields"/>
+    <TextField fx:id="tfNickname" promptText="nickname" onKeyReleased="#checkFields"/>
+    <TextArea fx:id="taMessages" VBox.vgrow="ALWAYS" editable="false" wrapText="true"/>
+    <HBox>
+        <Button fx:id="btnRegister" text="Registration" minWidth="155" disable="true" onAction="#tryToRegistration"/>
+        <Button fx:id="btnCancel" text="Cancel" minWidth="155" onAction="#closeWindow"/>
+    </HBox>
+
+</VBox>
