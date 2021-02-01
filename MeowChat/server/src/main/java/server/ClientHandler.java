@@ -9,6 +9,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 public class ClientHandler {
+
+    private final int TIMEOUT_TO_KICK = 5000;
+
     private Server server;
     private Socket socket;
     private DataInputStream in;
@@ -26,7 +29,7 @@ public class ClientHandler {
             new Thread(() -> {
                 try {
 
-                    socket.setSoTimeout(5000);
+                    socket.setSoTimeout(TIMEOUT_TO_KICK);
 
                     // цикл аутентификации
                     while (true) {
@@ -71,25 +74,45 @@ public class ClientHandler {
                     // цикл работы
                     while (true) {
                         String msg = in.readUTF();
-                        if (msg.startsWith("/")){
+                        if (msg.startsWith("/")) {
                             if (msg.trim().equals(Command.QUIT)) {
                                 sendMsg(Command.QUIT);
                                 System.out.printf(Command.DISCONNECT, nickname);
                                 break;
                             }
-                            if (msg.startsWith(Command.PERSONAL_MSG)){
-                                if (msg.split("\\s", 3).length < 3){
+                            if (msg.startsWith(Command.PERSONAL_MSG)) {
+                                if (msg.split("\\s", 3).length < 3) {
                                     continue;
                                 }
                                 server.broadcastMsg(this, msg.split("\\s", 3)[2], msg.split("\\s", 3)[1]);
                             }
-                        }  else {
+                            if (msg.startsWith(Command.CHANGE_MY_NICK)) {
+                                String[] tokens = msg.split("\\s", 2);
+                                if (tokens.length < 2) {
+                                    continue;
+                                }
+                                if (tokens[1].split("\\s").length > 1){
+                                    sendMsg(String.format(Command.BAD_NICKNAME));
+                                    continue;
+                                }
+                                if (tokens[1].length() > 50) {
+                                    sendMsg(String.format(Command.TOO_LONG_NICK));
+                                    continue;
+                                }
+                                if (((DBWorkService) server.getAuthService()).changeNickname(this.login, tokens[1])) {
+                                    server.broadcastMsg(this, String.format(Command.CHANGED_NICK, tokens[1]));
+                                    nickname = tokens[1];
+                                    server.broadcastClientList();
+                                    sendMsg(msg);
+                                }
+                            }
+                        } else {
                             server.broadcastMsg(this, msg);
                         }
                     }
                 } catch (SocketTimeoutException e) {
                     sendMsg(Command.QUIT);
-                } catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     System.out.println(e.getMessage());
                 } catch (IOException e) {
                     e.printStackTrace();

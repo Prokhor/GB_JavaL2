@@ -32,6 +32,11 @@ public class RegistrationController {
         String password2 = pfPassword2.getText().trim();
         String nickname = tfNickname.getText().trim();
 
+        if (nickname.split("\\s").length > 1){
+            taMessages.appendText(Command.BAD_NICKNAME);
+            return;
+        }
+
         if (password1.equals(password2)) {
             controller.tryToRegistration(login, password1, nickname);
         } else {

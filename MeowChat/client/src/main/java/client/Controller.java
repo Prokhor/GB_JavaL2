@@ -3,30 +3,26 @@ package client;
 import commands.Command;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -74,13 +70,20 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    public void lvClientsClicked(MouseEvent mouseEvent) {
-        String receiver = lvClients.getSelectionModel().getSelectedItem();
-        tfMessage.setText(String.format("%s %s ", Command.PERSONAL_MSG, receiver));
+    private void lvClientsClicked(MouseEvent mouseEvent) {
+        if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            String receiver = lvClients.getSelectionModel().getSelectedItem();
+            if (receiver != null) {
+                tfMessage.setText(String.format("%s %s ", Command.PERSONAL_MSG, receiver));
+            }
+            tfMessage.requestFocus();
+            tfMessage.deselect();
+            tfMessage.positionCaret(tfMessage.getText().length());
+        }
     }
 
     @FXML
-    public void registrationClient(ActionEvent actionEvent) {
+    private void registrationClient(ActionEvent actionEvent) {
         if (regStage == null){
             createRegWindow();
         }
@@ -113,6 +116,31 @@ public class Controller implements Initializable {
             });
         });
         setAuthenticated(false);
+
+        lvClients.setCellFactory(listView -> new ListCell<String>(){
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null){
+                    setText(null);
+                    setGraphic(null);
+                    return;
+                }
+                setText(null);
+
+                Label textLabel = new Label(item + " ");
+
+                HBox hbox = new HBox();
+                hbox.setSpacing(10);
+
+                Label iconLabel = new Label();
+                iconLabel.setGraphic(new ImageView(new Image("./img/avatar.png")));
+
+                hbox.getChildren().addAll(iconLabel, textLabel);
+                setGraphic(hbox);
+            }
+        });
     }
 
     private void connect() {
@@ -165,6 +193,9 @@ public class Controller implements Initializable {
                                         lvClients.getItems().add(tokens[i]);
                                     }
                                 });
+                            }
+                            if (msg.startsWith(Command.CHANGE_MY_NICK)) {
+                                setTitle(msg.split("\\s")[1]);
                             }
                         } else {
                             taMessages.appendText(msg + "\n");
