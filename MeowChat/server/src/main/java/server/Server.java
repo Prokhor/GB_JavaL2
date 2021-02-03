@@ -1,6 +1,7 @@
 package server;
 
 import commands.Command;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,8 +22,8 @@ public class Server {
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
-        //authService = new SimpleAuthService();
-        authService = new DBWorkService();
+        authService = new SimpleAuthService();
+        //authService = new DBWorkService();
 
         try {
             server = new ServerSocket(PORT);
@@ -54,7 +55,9 @@ public class Server {
         for (ClientHandler client : clients) {
             client.sendMsg(message);
         }
-        ((LogService)authService).logUserMessage(((LogService) authService).getUserIDByNickname(sender.getNickname()), msg, dateFormat.format(new Date(System.currentTimeMillis())));
+        if (authService instanceof LogService) {
+            ((LogService) authService).logUserMessage(((LogService) authService).getUserIDByNickname(sender.getNickname()), msg, dateFormat.format(new Date(System.currentTimeMillis())));
+        }
     }
 
     public void broadcastMsg(ClientHandler sender, String msg, String recipientNickname){
@@ -65,10 +68,12 @@ public class Server {
                 if (!client.equals(sender)){
                     sender.sendMsg(message);
                 }
-                ((LogService)authService).logUserMessage(
-                        ((LogService) authService).getUserIDByNickname(sender.getNickname()),
-                        ((LogService) authService).getUserIDByNickname(recipientNickname),
-                        msg, dateFormat.format(new Date(System.currentTimeMillis())));
+                if (authService instanceof LogService) {
+                    ((LogService) authService).logUserMessage(
+                            ((LogService) authService).getUserIDByNickname(sender.getNickname()),
+                            ((LogService) authService).getUserIDByNickname(recipientNickname),
+                            msg, dateFormat.format(new Date(System.currentTimeMillis())));
+                }
                 return;
             }
         }
