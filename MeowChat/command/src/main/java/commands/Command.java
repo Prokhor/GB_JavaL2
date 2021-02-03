@@ -32,6 +32,7 @@ public class Command {
     public static final String DELETE_USER_BY_LOGIN = "UPDATE users SET user_isActive = 0 WHERE user_login = ?;";
     public static final String CHANGE_NICKNAME_BY_LOGIN = "UPDATE users SET user_nickname = ? WHERE user_login = ?;";
     public static final String GET_USERID_BY_NICKNAME = "SELECT user_id FROM users WHERE user_nickname = ?;";
+    public static final String GET_NICKNAME_BY_LOGIN_AND_PASSWORD = "SELECT user_nickname FROM users WHERE user_login = ? AND user_password = ?;";
     public static final String GET_ALL_USERS = "SELECT user_login, user_password, user_nickname, user_isActive FROM users;";
     public static final String LOG_USER_MESSAGE = "INSERT INTO log_users_messages (log_user_id, log_to_user_id, log_message, log_message_datetime) VALUES (?, ?, ?, ?)";
     public static final String LOG_USER_PRIVATE_MESSAGE = "INSERT INTO log_users_messages (log_user_id, log_message, log_message_datetime) VALUES (?, ?, ?)";

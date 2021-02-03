@@ -1,7 +1,6 @@
 package server;
 
 import commands.Command;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -22,8 +21,8 @@ public class Server {
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
-        authService = new SimpleAuthService();
-        //authService = new DBWorkService();
+        //authService = new SimpleAuthService();
+        authService = new DBWorkService();
 
         try {
             server = new ServerSocket(PORT);
