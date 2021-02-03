@@ -56,6 +56,14 @@ public class DataBaseConnection {
         return preparedStatement.executeQuery().getInt("user_id");
     }
 
+    public String getUserNicknameByLoginAndPassword(String login, String password) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(Command.GET_NICKNAME_BY_LOGIN_AND_PASSWORD);
+        preparedStatement.setString(1, login);
+        preparedStatement.setString(2, password);
+
+        return preparedStatement.executeQuery().getString("user_nickname");
+    }
+
     public ResultSet getAllUsers() throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(Command.GET_ALL_USERS);
 

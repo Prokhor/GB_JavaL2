@@ -54,7 +54,9 @@ public class Server {
         for (ClientHandler client : clients) {
             client.sendMsg(message);
         }
-        ((LogService)authService).logUserMessage(((LogService) authService).getUserIDByNickname(sender.getNickname()), msg, dateFormat.format(new Date(System.currentTimeMillis())));
+        if (authService instanceof LogService) {
+            ((LogService) authService).logUserMessage(((LogService) authService).getUserIDByNickname(sender.getNickname()), msg, dateFormat.format(new Date(System.currentTimeMillis())));
+        }
     }
 
     public void broadcastMsg(ClientHandler sender, String msg, String recipientNickname){
@@ -65,10 +67,12 @@ public class Server {
                 if (!client.equals(sender)){
                     sender.sendMsg(message);
                 }
-                ((LogService)authService).logUserMessage(
-                        ((LogService) authService).getUserIDByNickname(sender.getNickname()),
-                        ((LogService) authService).getUserIDByNickname(recipientNickname),
-                        msg, dateFormat.format(new Date(System.currentTimeMillis())));
+                if (authService instanceof LogService) {
+                    ((LogService) authService).logUserMessage(
+                            ((LogService) authService).getUserIDByNickname(sender.getNickname()),
+                            ((LogService) authService).getUserIDByNickname(recipientNickname),
+                            msg, dateFormat.format(new Date(System.currentTimeMillis())));
+                }
                 return;
             }
         }
