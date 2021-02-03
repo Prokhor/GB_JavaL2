@@ -7,8 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -20,16 +19,14 @@ public class Server {
     private List<ClientHandler> clients;
     private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
-    private AuthService authService;
-
     public Server() {
         clients = new CopyOnWriteArrayList<>();
-        authService = new SimpleAuthService();
+        //authService = new SimpleAuthService();
+        authService = new DBWorkService();
 
         try {
             server = new ServerSocket(PORT);
             System.out.println(Command.SERVER_STARTED);
-
             while (true) {
                 socket = server.accept();
                 new ClientHandler(this, socket);
@@ -37,6 +34,7 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            ((DBWorkService) authService).disconnect();
             try {
                 socket.close();
             } catch (IOException e) {
@@ -45,21 +43,32 @@ public class Server {
         }
     }
 
+    private AuthService authService;
+
+    public AuthService getAuthService() {
+        return authService;
+    }
+
     public void broadcastMsg(ClientHandler sender, String msg){
         String message = String.format("%s [%s]: %s", dateFormat.format(new Date(System.currentTimeMillis())), sender.getNickname(), msg);
         for (ClientHandler client : clients) {
             client.sendMsg(message);
         }
+        ((LogService)authService).logUserMessage(((LogService) authService).getUserIDByNickname(sender.getNickname()), msg, dateFormat.format(new Date(System.currentTimeMillis())));
     }
 
-    public void broadcastMsg(ClientHandler sender, String msg, String recipientLogin){
-        String message = String.format("%s [%s] private to [%s]: %s", dateFormat.format(new Date(System.currentTimeMillis())), sender.getNickname(), recipientLogin, msg);
+    public void broadcastMsg(ClientHandler sender, String msg, String recipientNickname){
+        String message = String.format("%s [%s] private to [%s]: %s", dateFormat.format(new Date(System.currentTimeMillis())), sender.getNickname(), recipientNickname, msg);
         for (ClientHandler client : clients) {
-            if (client.getNickname().equals(recipientLogin)){
+            if (client.getNickname().equals(recipientNickname)){
                 client.sendMsg(message);
                 if (!client.equals(sender)){
                     sender.sendMsg(message);
                 }
+                ((LogService)authService).logUserMessage(
+                        ((LogService) authService).getUserIDByNickname(sender.getNickname()),
+                        ((LogService) authService).getUserIDByNickname(recipientNickname),
+                        msg, dateFormat.format(new Date(System.currentTimeMillis())));
                 return;
             }
         }
@@ -80,17 +89,15 @@ public class Server {
         clients.remove(clientHandler);
         broadcastClientList();
         for (ClientHandler client : clients) {
-            client.sendMsg(String.format(Command.DISCONNECTED_FROM_CHAT, clientHandler.getNickname()));
+            if (client.getNickname() != null){
+                client.sendMsg(String.format(Command.DISCONNECTED_FROM_CHAT, clientHandler.getNickname()));
+            }
         }
-    }
-
-    public AuthService getAuthService() {
-        return authService;
     }
 
     public boolean isLoginIsAuthenticated(String login){
         for (ClientHandler client : clients) {
-            if (client.getLogin().equals(login)){
+            if (client.getLogin().equalsIgnoreCase(login)){
                 return true;
             }
         }
