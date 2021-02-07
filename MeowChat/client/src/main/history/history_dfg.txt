@@ -1,0 +1,3 @@
+system: [Administrator connected to chat]
+07.02.2021 14:42:29 [Administrator] private to [dfg]: hello!
+system: [Administrator disconnected from chat]

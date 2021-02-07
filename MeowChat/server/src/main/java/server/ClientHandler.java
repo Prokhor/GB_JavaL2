@@ -2,15 +2,14 @@ package server;
 
 import commands.Command;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 public class ClientHandler {
 
     private final int TIMEOUT_TO_KICK = 5000;
+    private final String LOG_LOCAL_HISTORY_FILENAME = "history/history_%s.txt";
 
     private Server server;
     private Socket socket;
@@ -91,7 +90,7 @@ public class ClientHandler {
                                 if (tokens.length < 2) {
                                     continue;
                                 }
-                                if (tokens[1].split("\\s").length > 1){
+                                if (tokens[1].split("\\s").length > 1) {
                                     sendMsg(String.format(Command.BAD_NICKNAME));
                                     continue;
                                 }

@@ -18,11 +18,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -84,7 +86,7 @@ public class Controller implements Initializable {
 
     @FXML
     private void registrationClient(ActionEvent actionEvent) {
-        if (regStage == null){
+        if (regStage == null) {
             createRegWindow();
         }
         regStage.show();
@@ -92,6 +94,9 @@ public class Controller implements Initializable {
 
     private final String SERVER_ADDRESS = "localhost";
     private final int PORT = 8880;
+    private final String LOG_HISTORY_PATHNAME = "client/src/main/history/history_%s.txt";
+    private final int LOG_HISTORY_DEPTH = 100;
+
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
@@ -100,13 +105,14 @@ public class Controller implements Initializable {
     private Stage stage;
     private Stage regStage;
     private RegistrationController registrationController;
+    private FileOutputStream logHistoryOut;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Platform.runLater(() -> {
             stage = (Stage) taMessages.getScene().getWindow();
             stage.setOnCloseRequest(event -> {
-                if (socket != null && !socket.isClosed()){
+                if (socket != null && !socket.isClosed()) {
                     try {
                         out.writeUTF(Command.QUIT);
                     } catch (IOException e) {
@@ -117,12 +123,12 @@ public class Controller implements Initializable {
         });
         setAuthenticated(false);
 
-        lvClients.setCellFactory(listView -> new ListCell<String>(){
+        lvClients.setCellFactory(listView -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
 
-                if (empty || item == null){
+                if (empty || item == null) {
                     setText(null);
                     setGraphic(null);
                     return;
@@ -150,6 +156,7 @@ public class Controller implements Initializable {
             out = new DataOutputStream(socket.getOutputStream());
 
             new Thread(() -> {
+
                 try {
                     // цикл аутентификации
                     while (true) {
@@ -157,9 +164,33 @@ public class Controller implements Initializable {
 
                         if (msg.startsWith("/")) {
                             if (msg.startsWith(Command.AUTH_SUCCESS)) {
+                                try {
+                                    logHistoryOut = new FileOutputStream(String.format(LOG_HISTORY_PATHNAME, tfLogin.getText()), true);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
                                 nickname = msg.split("\\s")[1];
                                 setAuthenticated(true);
-                                taMessages.appendText(String.format(Command.SUCCESS_CONNECT, nickname));
+                                Platform.runLater(() -> {
+                                    List<String> history = null;
+                                    try {
+                                        history = Files.readAllLines(Paths.get(String.format(LOG_HISTORY_PATHNAME, tfLogin.getText())));
+                                    } catch (IOException ioException) {
+                                        ioException.printStackTrace();
+                                    }
+                                    if (history != null) {
+                                        if (history.size() <= LOG_HISTORY_DEPTH) {
+                                            for (String s : history) {
+                                                taMessages.appendText(s + "\n");
+                                            }
+                                        } else {
+                                            for (int i = history.size() - LOG_HISTORY_DEPTH; i < history.size(); i++) {
+                                                taMessages.appendText(history.get(i) + "\n");
+                                            }
+                                        }
+                                    }
+                                    taMessages.appendText(String.format(Command.SUCCESS_CONNECT, nickname));
+                                });
                                 break;
                             }
 
@@ -167,10 +198,10 @@ public class Controller implements Initializable {
                                 throw new RuntimeException(Command.KICKED_BY_SERVER);
                             }
 
-                            if (msg.equals(Command.REGISTER_SUCCESS)){
+                            if (msg.equals(Command.REGISTER_SUCCESS)) {
                                 registrationController.registerSuccess();
                             }
-                            if (msg.equals(Command.REGISTER_FAILED)){
+                            if (msg.equals(Command.REGISTER_FAILED)) {
                                 registrationController.registerFailed();
                             }
                         } else {
@@ -181,7 +212,7 @@ public class Controller implements Initializable {
                     // цикл работы
                     while (true) {
                         String msg = in.readUTF();
-                        if (msg.startsWith("/")){
+                        if (msg.startsWith("/")) {
                             if (msg.trim().equals(Command.QUIT)) {
                                 break;
                             }
@@ -199,14 +230,22 @@ public class Controller implements Initializable {
                             }
                         } else {
                             taMessages.appendText(msg + "\n");
+                            logHistoryOut.write((msg + "\n").getBytes(StandardCharsets.UTF_8));
                         }
                     }
-                } catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     System.out.println(e.getMessage());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     setAuthenticated(false);
+                    try {
+                        if (logHistoryOut != null) {
+                            logHistoryOut.close();
+                        }
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                     try {
                         socket.close();
                     } catch (IOException e) {
@@ -253,12 +292,12 @@ public class Controller implements Initializable {
             regStage.initModality(Modality.APPLICATION_MODAL);
             regStage.setResizable(false);
             regStage.initStyle(StageStyle.UNIFIED);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void tryToRegistration(String login, String password, String nickname){
+    public void tryToRegistration(String login, String password, String nickname) {
         checkSocket();
         String msg = String.format("%s %s %s %s", Command.REGISTER_CLIENT, login, password, nickname);
         try {
@@ -268,7 +307,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private void checkSocket(){
+    private void checkSocket() {
         if (socket == null || socket.isClosed()) {
             connect();
         }
