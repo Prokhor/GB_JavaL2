@@ -1,0 +1,13 @@
+system: [dfg connected to chat]
+07.02.2021 13:39:25 [dfg] private to [zxc]: hi!
+07.02.2021 13:39:39 [dfg] private to [zxc]: Привет! Ты как? 
+07.02.2021 13:39:51 [zxc] private to [dfg]: Прива! Норм! Как сам?
+07.02.2021 13:39:55 [QWE]: лол
+system: [dfg disconnected from chat]
+system: [QWE disconnected from chat]
+07.02.2021 13:43:19 [zxc]: sdfgdsfg
+system: [QWE disconnected from chat]
+system: [QWE connected to chat]
+system: [QWE disconnected from chat]
+system: [QWE connected to chat]
+system: [QWE disconnected from chat]

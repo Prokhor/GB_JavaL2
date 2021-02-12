@@ -1,0 +1,6 @@
+system: [zxc connected to chat]
+system: [dfg connected to chat]
+07.02.2021 13:39:55 [QWE]: лол
+system: [dfg disconnected from chat]
+system: [QWE disconnected from chat]
+system: [zxc disconnected from chat]
