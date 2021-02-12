@@ -32,7 +32,19 @@ public class Command {
     public static final String DELETE_USER_BY_LOGIN = "UPDATE users SET user_isActive = 0 WHERE user_login = ?;";
     public static final String CHANGE_NICKNAME_BY_LOGIN = "UPDATE users SET user_nickname = ? WHERE user_login = ?;";
     public static final String GET_USERID_BY_NICKNAME = "SELECT user_id FROM users WHERE user_nickname = ?;";
+    public static final String GET_NICKNAME_BY_LOGIN_AND_PASSWORD = "SELECT user_nickname FROM users WHERE user_login = ? AND user_password = ?;";
     public static final String GET_ALL_USERS = "SELECT user_login, user_password, user_nickname, user_isActive FROM users;";
     public static final String LOG_USER_MESSAGE = "INSERT INTO log_users_messages (log_user_id, log_to_user_id, log_message, log_message_datetime) VALUES (?, ?, ?, ?)";
     public static final String LOG_USER_PRIVATE_MESSAGE = "INSERT INTO log_users_messages (log_user_id, log_message, log_message_datetime) VALUES (?, ?, ?)";
+    public static final String GET_TOP_LAST_MESSAGES = "select" +
+            " case " +
+            " when uto.user_id > 0 then lum.log_message_datetime || ' [' || u.user_nickname || '] private to [' || uto.user_nickname || ']: ' || lum.log_message" +
+            " else lum.log_message_datetime || ' [' || u.user_nickname || ']: ' || lum.log_message" +
+            " end as [msg]" +
+            " from log_users_messages lum" +
+            " inner join users u on lum.log_user_id = u.user_id" +
+            " left join users uto on lum.log_to_user_id = uto.user_id" +
+            " order by lum.log_id desc" +
+            " limit ?;";
+
 }

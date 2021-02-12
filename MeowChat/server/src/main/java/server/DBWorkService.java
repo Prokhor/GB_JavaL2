@@ -1,9 +1,5 @@
 package server;
 
-import org.sqlite.core.DB;
-
-import java.sql.ResultSet;
-
 public class DBWorkService implements AuthService, LogService {
 
     private DataBaseConnection dbc;
@@ -21,12 +17,7 @@ public class DBWorkService implements AuthService, LogService {
     @Override
     public String getNicknameByLoginAndPassword(String login, String password) {
         try {
-            ResultSet rsUsers = dbc.getAllUsers();
-            while (rsUsers.next()) {
-                if (rsUsers.getString("user_login").equalsIgnoreCase(login) && rsUsers.getString("user_password").equals(password)) {
-                    return rsUsers.getString("user_nickname");
-                }
-            }
+            return dbc.getUserNicknameByLoginAndPassword(login, password);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,7 +60,7 @@ public class DBWorkService implements AuthService, LogService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return DB.SQLITE_NULL;
+        return -1;
     }
 
     public boolean changeNickname(String login, String newNickname){
