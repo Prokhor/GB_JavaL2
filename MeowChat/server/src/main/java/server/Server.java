@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.sql.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
 
@@ -18,11 +20,13 @@ public class Server {
     private Socket socket;
     private List<ClientHandler> clients;
     private final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private ExecutorService service;
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
         //authService = new SimpleAuthService();
         authService = new DBWorkService();
+        service = Executors.newCachedThreadPool();
 
         try {
             server = new ServerSocket(PORT);
@@ -35,6 +39,7 @@ public class Server {
             e.printStackTrace();
         } finally {
             ((DBWorkService) authService).disconnect();
+            service.shutdown();
             try {
                 socket.close();
             } catch (IOException e) {
@@ -117,5 +122,9 @@ public class Server {
         for (ClientHandler client : clients) {
             client.sendMsg(msg);
         }
+    }
+
+    public ExecutorService getService() {
+        return service;
     }
 }

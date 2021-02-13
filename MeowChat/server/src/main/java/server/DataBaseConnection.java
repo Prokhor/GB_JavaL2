@@ -88,4 +88,13 @@ public class DataBaseConnection {
 
         return preparedStatement.executeUpdate();
     }
+
+    public ResultSet getUserHistory(int user_id, int limit) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(Command.GET_TOP_LAST_MESSAGES);
+        preparedStatement.setInt(1, user_id);
+        preparedStatement.setInt(2, user_id);
+        preparedStatement.setInt(3, limit);
+
+        return preparedStatement.executeQuery();
+    }
 }
