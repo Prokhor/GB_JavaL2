@@ -4,3 +4,8 @@ system: [dfg connected to chat]
 system: [dfg disconnected from chat]
 system: [QWE disconnected from chat]
 system: [zxc disconnected from chat]
+13.02.2021 15:54:20 [MRRR]: fcgbcfg
+13.02.2021 15:54:24 [QWE]: ki
+13.02.2021 15:54:25 [QWE]: kuku
+13.02.2021 15:54:31 [QWE] private to [MRRR]: ergter
+system: [QWE disconnected from chat]

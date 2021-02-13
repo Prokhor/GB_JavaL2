@@ -1,5 +1,8 @@
 package server;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class DBWorkService implements AuthService, LogService {
 
     private DataBaseConnection dbc;
@@ -71,6 +74,15 @@ public class DBWorkService implements AuthService, LogService {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public ResultSet loadUserHistory(int user_id, int limit){
+        try {
+            return dbc.getUserHistory(user_id, limit);
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+        return null;
     }
 
     public void disconnect() {
